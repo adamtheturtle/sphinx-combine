@@ -6,20 +6,24 @@ from collections.abc import Callable
 from pathlib import Path
 from textwrap import dedent
 
+import pytest
+from bs4 import BeautifulSoup
 from sphinx.testing.util import SphinxTestApp
 
 
+@pytest.mark.sphinx("html")
 def test_combine_code_blocks(
     tmp_path: Path,
     make_app: Callable[..., SphinxTestApp],
 ) -> None:
     """
-    The ``code-block`` directive replaces the placeholders defined in
-    ``conf.py`` as specified.
+    Test that 'combined-code-block' directive merges multiple code blocks into
+    one single code block.
     """
     source_directory = tmp_path / "source"
     source_directory.mkdir()
-    source_file = source_directory / "index.rst"
+
+    # Write conf.py
     conf_py = source_directory / "conf.py"
     conf_py_content = dedent(
         text="""\
@@ -27,17 +31,46 @@ def test_combine_code_blocks(
         """,
     )
     conf_py.write_text(data=conf_py_content)
-    source_file_content = dedent(
-        text="""\
-        .. code-block:: shell
-           :substitutions:
 
-           $ PRE-|a|-POST
-        """,
+    # Write index.rst
+    source_file = source_directory / "index.rst"
+    index_rst_content = dedent(
+        text="""\
+        Testing Combined Code Blocks
+        ============================
+
+        .. combined-code-block::
+           :language: python
+
+           .. code-block:: python
+
+               print("Hello from snippet one")
+
+           .. code-block:: python
+
+               print("Hello from snippet two")
+        """
     )
-    source_file.write_text(data=source_file_content)
+    source_file.write_text(data=index_rst_content)
+
+    # Build the docs
     app = make_app(srcdir=source_directory)
     app.build()
-    expected = "PRE-example_substitution-POST"
-    content_html = app.outdir / "index.html"
-    assert expected in content_html.read_text()
+
+    # Check the generated HTML
+    html_output = source_directory / "_build" / "html" / "index.html"
+    html_content = html_output.read_text(encoding="utf-8")
+
+    soup = BeautifulSoup(html_content, "html.parser")
+
+    code_divs = soup.find_all("div", class_="highlight")
+
+    # Expect exactly one code block
+    assert (
+        len(code_divs) == 1
+    ), f"Expected one code block, found {len(code_divs)}."
+
+    # Verify both snippets appear in that single code block
+    code_block_text = code_divs[0].get_text()
+    assert "Hello from snippet one" in code_block_text
+    assert "Hello from snippet two" in code_block_text
