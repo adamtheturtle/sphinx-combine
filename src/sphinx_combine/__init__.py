@@ -34,7 +34,7 @@ class CombinedCodeBlock(SphinxDirective):
         and return a single merged code-block node.
         """
         container = nodes.container()
-        self.state.nested_parse(
+        self.state.nested_parse(  # pyright: ignore[reportUnknownMemberType]
             block=self.content,
             input_offset=self.content_offset,
             node=container,
