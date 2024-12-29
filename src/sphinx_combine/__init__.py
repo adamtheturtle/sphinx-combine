@@ -41,14 +41,12 @@ class CombinedCodeBlock(SphinxDirective):
         )
 
         traversed_nodes = container.findall(condition=nodes.literal_block)
-        code_snippets: list[str] = [
-            literal.astext() for literal in traversed_nodes
-        ]
+        code_snippets = [literal.astext() for literal in traversed_nodes]
 
-        combined_text: str = "\n".join(code_snippets)
-        language: str = self.options.get("language", "none")
+        combined_text = "\n".join(code_snippets)
+        language = self.options.get("language", "none")
 
-        combined_node: Node = nodes.literal_block(
+        combined_node = nodes.literal_block(
             combined_text,
             combined_text,
             language=language,
