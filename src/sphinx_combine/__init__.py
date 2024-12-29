@@ -40,7 +40,7 @@ class CombinedCodeBlock(SphinxDirective):
             node=container,
         )
 
-        traversed_nodes = container.traverse(condition=nodes.literal_block)
+        traversed_nodes = container.findall(condition=nodes.literal_block)
         code_snippets: list[str] = [
             literal.astext() for literal in traversed_nodes
         ]
