@@ -13,10 +13,9 @@ from sphinx.util.docutils import SphinxDirective
 
 
 class CombinedCodeBlock(SphinxDirective):
-    """A Sphinx directive that merges multiple nested code blocks into a single
+    """
+    A Sphinx directive that merges multiple nested code blocks into a single
     literal block.
-
-    This works across all builders (HTML, PDF, etc.).
     """
 
     has_content: ClassVar[bool] = True
@@ -55,15 +54,11 @@ class CombinedCodeBlock(SphinxDirective):
 
 
 def setup(app: Sphinx) -> dict[str, bool | str]:
-    """Register the 'combined-code-block' directive with Sphinx.
-
-    :param app: The Sphinx application object.
-    :return: Metadata for Sphinx indicating this extension's version and
-        parallel read/write status.
+    """
+    Register the 'combined-code-block' directive with Sphinx.
     """
     app.add_directive(name="combined-code-block", cls=CombinedCodeBlock)
     return {
-        "version": "0.1",
         "parallel_read_safe": True,
         "parallel_write_safe": True,
     }
