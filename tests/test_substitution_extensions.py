@@ -53,24 +53,20 @@ def test_combine_code_blocks(
     )
     source_file.write_text(data=index_rst_content)
 
-    # Build the docs
     app = make_app(srcdir=source_directory)
     app.build()
 
-    # Check the generated HTML
     html_output = source_directory / "_build" / "html" / "index.html"
     html_content = html_output.read_text(encoding="utf-8")
 
-    soup = BeautifulSoup(html_content, "html.parser")
+    soup = BeautifulSoup(markup=html_content, features="html.parser")
 
-    code_divs = soup.find_all("div", class_="highlight")
+    code_divs = soup.find_all(name="div", class_="highlight")
 
-    # Expect exactly one code block
     assert (
         len(code_divs) == 1
     ), f"Expected one code block, found {len(code_divs)}."
 
-    # Verify both snippets appear in that single code block
     code_block_text = code_divs[0].get_text()
     assert "Hello from snippet one" in code_block_text
     assert "Hello from snippet two" in code_block_text
