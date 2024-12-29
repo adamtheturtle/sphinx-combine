@@ -8,9 +8,10 @@ from sphinx.util.docutils import SphinxDirective
 
 
 class CombinedCodeBlock(SphinxDirective):
-    """
-    A Sphinx directive that merges multiple nested code blocks into a single
-    literal block. This works across all builders (HTML, PDF, etc.).
+    """A Sphinx directive that merges multiple nested code blocks into a single
+    literal block.
+
+    This works across all builders (HTML, PDF, etc.).
     """
 
     has_content: bool = True
@@ -48,12 +49,11 @@ class CombinedCodeBlock(SphinxDirective):
 
 
 def setup(app: Sphinx) -> dict[str, bool | str]:
-    """
-    Register the 'combined-code-block' directive with Sphinx.
+    """Register the 'combined-code-block' directive with Sphinx.
 
     :param app: The Sphinx application object.
-    :return: Metadata for Sphinx indicating this extension’s version
-             and parallel read/write status.
+    :return: Metadata for Sphinx indicating this extension’s version and
+        parallel read/write status.
     """
     app.add_directive("combined-code-block", CombinedCodeBlock)
     return {
