@@ -23,7 +23,7 @@ def test_combine_code_blocks(
     conf_py = source_directory / "conf.py"
     conf_py_content = dedent(
         text="""\
-        extensions = ['sphinx_conbine']
+        extensions = ['sphinx_combine']
         """,
     )
     conf_py.write_text(data=conf_py_content)
