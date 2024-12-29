@@ -18,8 +18,8 @@ Configuration
 
     .. code-block:: python
 
-       echo "The author is |author|"
+       """First code block."""
 
     .. code-block:: python
 
-       echo "The author is |author|"
+       """Second code block."""
