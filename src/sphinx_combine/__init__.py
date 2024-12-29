@@ -10,6 +10,7 @@ from docutils.nodes import Node
 from docutils.parsers.rst import directives
 from sphinx.application import Sphinx
 from sphinx.util.docutils import SphinxDirective
+from sphinx.util.typing import ExtensionMetadata
 
 
 class CombinedCodeBlock(SphinxDirective):
@@ -53,7 +54,7 @@ class CombinedCodeBlock(SphinxDirective):
         return [combined_node]
 
 
-def setup(app: Sphinx) -> dict[str, bool | str]:
+def setup(app: Sphinx) -> ExtensionMetadata:
     """
     Register the 'combined-code-block' directive with Sphinx.
     """
