@@ -46,8 +46,8 @@ class CombinedCodeBlock(SphinxDirective):
             language = "none"
 
         combined_node = nodes.literal_block(
-            combined_text,
-            combined_text,
+            rawsource=combined_text,
+            text=combined_text,
             language=language,
         )
         return [combined_node]
