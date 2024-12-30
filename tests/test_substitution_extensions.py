@@ -40,7 +40,6 @@ def test_combine_code_blocks(
         ============================
 
         .. combined-code-block::
-           :language: python
 
            .. code-block:: python
 

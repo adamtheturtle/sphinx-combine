@@ -2,12 +2,10 @@
 Sphinx extension to combine multiple nested code-blocks into a single one.
 """
 
-from collections.abc import Callable
-from typing import Any, ClassVar
+from typing import ClassVar
 
 from docutils import nodes
 from docutils.nodes import Node
-from docutils.parsers.rst import directives
 from sphinx.application import Sphinx
 from sphinx.util.docutils import SphinxDirective
 from sphinx.util.typing import ExtensionMetadata
@@ -20,13 +18,10 @@ class CombinedCodeBlock(SphinxDirective):
     """
 
     has_content: ClassVar[bool] = True
+
+    # The language is an optional argument for the directive.
     required_arguments: ClassVar[int] = 0
     optional_arguments: ClassVar[int] = 1
-    final_argument_whitespace: ClassVar[bool] = True
-
-    option_spec: ClassVar[dict[str, Callable[[str], Any]] | None] = {
-        "language": directives.unchanged_required,
-    }
 
     def run(self) -> list[Node]:
         """
@@ -44,7 +39,11 @@ class CombinedCodeBlock(SphinxDirective):
         code_snippets = [literal.astext() for literal in traversed_nodes]
 
         combined_text = "\n".join(code_snippets)
-        language = self.options.get("language", "none")
+
+        try:
+            language = self.arguments[0]
+        except IndexError:
+            language = "none"
 
         combined_node = nodes.literal_block(
             combined_text,
