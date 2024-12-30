@@ -2,26 +2,19 @@
 Sphinx extension to combine multiple nested code-blocks into a single one.
 """
 
-from typing import ClassVar
-
 from docutils import nodes
 from docutils.nodes import Node
+from docutils.statemachine import StringList
 from sphinx.application import Sphinx
-from sphinx.util.docutils import SphinxDirective
+from sphinx.directives.code import CodeBlock
 from sphinx.util.typing import ExtensionMetadata
 
 
-class CombinedCodeBlock(SphinxDirective):
+class CombinedCodeBlock(CodeBlock):
     """
     A Sphinx directive that merges multiple nested code blocks into a single
     literal block.
     """
-
-    has_content: ClassVar[bool] = True
-
-    # The language is an optional argument for the directive.
-    required_arguments: ClassVar[int] = 0
-    optional_arguments: ClassVar[int] = 1
 
     def run(self) -> list[Node]:
         """
@@ -36,21 +29,15 @@ class CombinedCodeBlock(SphinxDirective):
         )
 
         traversed_nodes = container.findall(condition=nodes.literal_block)
-        code_snippets = [literal.astext() for literal in traversed_nodes]
 
-        combined_text = "\n".join(code_snippets)
+        new_content = StringList()
+        for literal in traversed_nodes:
+            code_snippet = literal.astext()
+            new_item_string_list = StringList(initlist=[code_snippet])
+            new_content.extend(other=new_item_string_list)
 
-        try:
-            language = self.arguments[0]
-        except IndexError:
-            language = "none"
-
-        combined_node = nodes.literal_block(
-            rawsource=combined_text,
-            text=combined_text,
-            language=language,
-        )
-        return [combined_node]
+        self.content = new_content
+        return super().run()
 
 
 def setup(app: Sphinx) -> ExtensionMetadata:
