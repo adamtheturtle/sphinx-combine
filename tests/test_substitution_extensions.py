@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     argnames=["language_arguments", "parent_classes"],
     argvalues=[
         (("python",), ["highlight-python", "notranslate"]),
-        ((), ["highlight-none", "notranslate"]),
+        ((), ["highlight-default", "notranslate"]),
     ],
 )
 def test_combine_code_blocks(
