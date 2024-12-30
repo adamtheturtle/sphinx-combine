@@ -5,16 +5,29 @@ Tests for Sphinx extensions.
 from collections.abc import Callable
 from pathlib import Path
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 import pytest
 from bs4 import BeautifulSoup
 from sphinx.testing.util import SphinxTestApp
 
+if TYPE_CHECKING:
+    from bs4.element import ResultSet, Tag
+
 
 @pytest.mark.sphinx("html")
+@pytest.mark.parametrize(
+    argnames=["language_arguments", "parent_classes"],
+    argvalues=[
+        (("python",), ["highlight-python", "notranslate"]),
+        ((), ["highlight-none", "notranslate"]),
+    ],
+)
 def test_combine_code_blocks(
     tmp_path: Path,
     make_app: Callable[..., SphinxTestApp],
+    language_arguments: tuple[str, ...],
+    parent_classes: list[str],
 ) -> None:
     """
     Test that 'combined-code-block' directive merges multiple code blocks into
@@ -23,7 +36,6 @@ def test_combine_code_blocks(
     source_directory = tmp_path / "source"
     source_directory.mkdir()
 
-    # Write conf.py
     conf_py = source_directory / "conf.py"
     conf_py_content = dedent(
         text="""\
@@ -32,20 +44,20 @@ def test_combine_code_blocks(
     )
     conf_py.write_text(data=conf_py_content)
 
-    # Write index.rst
     source_file = source_directory / "index.rst"
+    joined_language_arguments = " ".join(language_arguments)
     index_rst_content = dedent(
-        text="""\
+        text=f"""\
         Testing Combined Code Blocks
         ============================
 
-        .. combined-code-block::
+        .. combined-code-block:: {joined_language_arguments}
 
-           .. code-block:: python
+           .. code-block::
 
                print("Hello from snippet one")
 
-           .. code-block:: python
+           .. code-block::
 
                print("Hello from snippet two")
         """
@@ -60,12 +72,14 @@ def test_combine_code_blocks(
 
     soup = BeautifulSoup(markup=html_content, features="html.parser")
 
-    code_divs = soup.find_all(name="div", class_="highlight")
+    code_divs: ResultSet[Tag] = soup.find_all(name="div", class_="highlight")
 
-    assert (
-        len(code_divs) == 1
-    ), f"Expected one code block, found {len(code_divs)}."
-
-    code_block_text = code_divs[0].get_text()
+    (code_div,) = code_divs
+    code_block_text = code_div.get_text()
     assert "Hello from snippet one" in code_block_text
     assert "Hello from snippet two" in code_block_text
+
+    # The given language influences the highlighting.
+    parent_div = code_div.parent
+    assert parent_div is not None
+    assert parent_div["class"] == parent_classes
