@@ -29,15 +29,15 @@ Add the following to ``conf.py`` to enable the extension:
 
    extensions += ["sphinx_combine"]
 
-Usage
------
+Using ``combined-code-block``
+-----------------------------
 
 The extension provides a new directive, ``combined-code-block``, which allows
 you to combine multiple code blocks into a single code block.
 
-The directive takes a language argument which is used to determine the syntax.
+The directive takes a language argument which is used to determine the syntax, as well as all options that the `code-block directive <https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-code-block>`_ supports.
 
-Languages of code blocks within the directive are ignored.
+Languages and options of code blocks within the directive are ignored.
 
 .. code-block:: restructuredtext
 
