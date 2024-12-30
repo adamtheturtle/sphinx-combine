@@ -11,7 +11,6 @@ Configuration
 -----------------------
 
 .. combined-code-block:: python
-   :language: python
 
     .. literalinclude:: conf.py
        :language: python
