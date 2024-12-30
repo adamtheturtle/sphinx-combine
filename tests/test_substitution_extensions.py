@@ -66,6 +66,7 @@ def test_combine_code_blocks(
 
     app = make_app(srcdir=source_directory)
     app.build()
+    assert not app.warning.getvalue()
 
     html_output = source_directory / "_build" / "html" / "index.html"
     html_content = html_output.read_text(encoding="utf-8")
@@ -83,3 +84,53 @@ def test_combine_code_blocks(
     parent_div = code_div.parent
     assert parent_div is not None
     assert parent_div["class"] == parent_classes
+
+
+@pytest.mark.sphinx("html")
+def test_combine_code_blocks_multiple_arguments(
+    tmp_path: Path,
+    make_app: Callable[..., SphinxTestApp],
+) -> None:
+    """
+    Test that 'combined-code-block' directive raises an error if multiple
+    language arguments are supplied.
+    """
+    source_directory = tmp_path / "source"
+    source_directory.mkdir()
+
+    conf_py = source_directory / "conf.py"
+    conf_py_content = dedent(
+        text="""\
+        extensions = ['sphinx_combine']
+        """,
+    )
+    conf_py.write_text(data=conf_py_content)
+
+    source_file = source_directory / "index.rst"
+    index_rst_content = dedent(
+        text="""\
+        Testing Combined Code Blocks
+        ============================
+
+        .. combined-code-block:: python css
+
+            .. code-block::
+
+                print("Hello from snippet one")
+
+            .. code-block::
+
+                print("Hello from snippet two")
+        """
+    )
+    source_file.write_text(data=index_rst_content)
+
+    app = make_app(srcdir=source_directory)
+    app.build()
+    expected_error = dedent(
+        text="""\
+        ERROR: Error in "combined-code-block" directive:
+        maximum 1 argument(s) allowed, 2 supplied.
+        """,
+    )
+    assert expected_error in app.warning.getvalue()
