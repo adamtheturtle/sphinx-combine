@@ -29,6 +29,31 @@ Add the following to ``conf.py`` to enable the extension:
 
    extensions += ["sphinx_combine"]
 
+Usage
+-----
+
+The extension provides a new directive, ``combined-code-block``, which allows
+you to combine multiple code blocks into a single code block.
+
+The directive takes a language argument which is used to determine the syntax.
+
+Languages of code blocks within the directive are ignored.
+
+.. code-block:: restructuredtext
+
+   .. combined-code-block:: python
+
+      .. literalinclude:: my_code.js
+         :language: javascript
+
+      .. code-block:: python
+
+         """First code block."""
+
+      .. code-block:: cpp
+
+         // Second code block.
+
 Contributing
 ------------
 
