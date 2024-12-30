@@ -54,6 +54,9 @@ Languages and options of code blocks within the directive are ignored.
 
          // Second code block.
 
+By default, there are no blank lines between the code blocks.
+To add a blank line, use ``|``.
+
 Contributing
 ------------
 

@@ -19,6 +19,12 @@ Configuration
 
        """First code block."""
 
+    |
+
     .. code-block:: python
 
-       """Second code block."""
+       """Second code block, after a blank line."""
+
+    .. code-block:: python
+
+       """Third code block, with no blank line."""

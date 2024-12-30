@@ -28,10 +28,8 @@ class CombinedCodeBlock(CodeBlock):
             node=container,
         )
 
-        traversed_nodes = container.findall(condition=nodes.literal_block)
-
         new_content = StringList()
-        for literal in traversed_nodes:
+        for literal in container:
             code_snippet = literal.astext()
             new_item_string_list = StringList(initlist=[code_snippet])
             new_content.extend(other=new_item_string_list)
