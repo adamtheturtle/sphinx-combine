@@ -45,7 +45,7 @@ optional-dependencies.dev = [
     "beartype==0.19.0",
     "beautifulsoup4==4.12.3",
     "check-manifest==0.50",
-    "deptry==0.21.2",
+    "deptry==0.22.0",
     "doc8==1.1.2",
     "doccmd==2024.12.26",
     "docformatter==1.7.5",
