@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 @pytest.mark.sphinx("html")
 @pytest.mark.parametrize(
-    argnames=["language_arguments", "parent_classes"],
+    argnames=("language_arguments", "parent_classes"),
     argvalues=[
         (("python",), ["highlight-python", "notranslate"]),
         ((), ["highlight-default", "notranslate"]),
