@@ -13,7 +13,7 @@ from sphinx.testing.util import SphinxTestApp
 
 @pytest.mark.parametrize(
     argnames="language_arguments",
-    argvalues=[(("python",), ())],
+    argvalues=[("python",), ()],
 )
 def test_combine_code_blocks(
     tmp_path: Path,
@@ -48,7 +48,7 @@ def test_combine_code_blocks(
 
                print("Hello from snippet one")
 
-           .. code-block::
+           .. code-block:: python
 
                print("Hello from snippet two")
         """
