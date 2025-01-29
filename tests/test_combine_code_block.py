@@ -26,14 +26,7 @@ def test_combine_code_blocks(
     """
     source_directory = tmp_path / "source"
     source_directory.mkdir()
-
-    conf_py = source_directory / "conf.py"
-    conf_py_content = dedent(
-        text="""\
-        extensions = ['sphinx_combine']
-        """,
-    )
-    conf_py.write_text(data=conf_py_content)
+    (source_directory / "conf.py").touch()
 
     source_file = source_directory / "index.rst"
     joined_language_arguments = " ".join(language_arguments)
@@ -55,7 +48,11 @@ def test_combine_code_blocks(
     )
     source_file.write_text(data=index_rst_content)
 
-    app = make_app(srcdir=source_directory, exception_on_warning=True)
+    app = make_app(
+        srcdir=source_directory,
+        exception_on_warning=True,
+        confoverrides={"extensions": ["sphinx_combine"]},
+    )
     app.build()
     assert app.statuscode == 0
     content_html = (app.outdir / "index.html").read_text()
@@ -96,13 +93,7 @@ def test_combine_code_blocks_multiple_arguments(
     source_directory = tmp_path / "source"
     source_directory.mkdir()
 
-    conf_py = source_directory / "conf.py"
-    conf_py_content = dedent(
-        text="""\
-        extensions = ['sphinx_combine']
-        """,
-    )
-    conf_py.write_text(data=conf_py_content)
+    (source_directory / "conf.py").touch()
 
     source_file = source_directory / "index.rst"
     index_rst_content = dedent(
@@ -123,7 +114,11 @@ def test_combine_code_blocks_multiple_arguments(
     )
     source_file.write_text(data=index_rst_content)
 
-    app = make_app(srcdir=source_directory, exception_on_warning=True)
+    app = make_app(
+        srcdir=source_directory,
+        exception_on_warning=True,
+        confoverrides={"extensions": ["sphinx_combine"]},
+    )
     expected_error = (
         'Error in "combined-code-block" directive:\n'
         "maximum 1 argument(s) allowed, 2 supplied."
