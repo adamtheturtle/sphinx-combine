@@ -10,7 +10,7 @@ Extension for Sphinx which enables combining code blocks.
 Installation
 ------------
 
-``sphinx-combine`` is compatible with Sphinx 7.2.0+ using Python 3.10+.
+``sphinx-combine`` is compatible with Sphinx 7.2.0+ using Python |minimum-python-version|\+.
 
 .. code-block:: console
 
@@ -69,3 +69,4 @@ See `CONTRIBUTING.rst <./CONTRIBUTING.rst>`_.
    :target: https://codecov.io/gh/adamtheturtle/sphinx-combine
 .. |PyPI| image:: https://badge.fury.io/py/sphinx-combine.svg
    :target: https://badge.fury.io/py/sphinx-combine
+.. |minimum-python-version| replace:: 3.11
