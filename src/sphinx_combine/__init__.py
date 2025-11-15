@@ -2,6 +2,8 @@
 Sphinx extension to combine multiple nested code-blocks into a single one.
 """
 
+from importlib.metadata import version
+
 from docutils import nodes
 from docutils.nodes import Node
 from docutils.statemachine import StringList
@@ -46,4 +48,5 @@ def setup(app: Sphinx) -> ExtensionMetadata:
     return {
         "parallel_read_safe": True,
         "parallel_write_safe": True,
+        "version": version(distribution_name="sphinx-combine"),
     }

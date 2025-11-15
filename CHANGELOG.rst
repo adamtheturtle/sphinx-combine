@@ -6,6 +6,8 @@ Changelog
 Next
 ----
 
+* Give version in extension metadata.
+
 2024.12.30.1
 ------------
 

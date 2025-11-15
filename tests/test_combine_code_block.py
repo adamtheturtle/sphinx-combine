@@ -3,12 +3,15 @@ Tests for Sphinx extensions.
 """
 
 from collections.abc import Callable
+from importlib.metadata import version
 from pathlib import Path
 from textwrap import dedent
 
 import pytest
 from sphinx.errors import SphinxWarning
 from sphinx.testing.util import SphinxTestApp
+
+import sphinx_combine
 
 
 @pytest.mark.parametrize(
@@ -126,3 +129,27 @@ def test_combine_code_blocks_multiple_arguments(
     with pytest.raises(expected_exception=SphinxWarning) as exc:
         app.build()
     assert expected_error in str(object=exc.value)
+
+
+def test_setup(
+    tmp_path: Path,
+    make_app: Callable[..., SphinxTestApp],
+) -> None:
+    """
+    Test that the setup function returns the expected metadata.
+    """
+    source_directory = tmp_path / "source"
+    source_directory.mkdir()
+    (source_directory / "conf.py").touch()
+
+    app = make_app(
+        srcdir=source_directory,
+        confoverrides={"extensions": ["sphinx_combine"]},
+    )
+    setup_result = sphinx_combine.setup(app=app)
+    pkg_version = version(distribution_name="sphinx-combine")
+    assert setup_result == {
+        "parallel_read_safe": True,
+        "parallel_write_safe": True,
+        "version": pkg_version,
+    }
