@@ -38,56 +38,36 @@ ci:
 
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
-
-# This should match the hook stages run in the lint configuration.
-default_install_hook_types: [pre-commit]
+default_install_hook_types: [pre-commit, pre-push]
 
 repos:
   - repo: meta
     hooks:
       - id: check-useless-excludes
-        stages: [pre-commit]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
       - id: check-added-large-files
-        stages: [pre-commit]
       - id: check-case-conflict
-        stages: [pre-commit]
       - id: check-executables-have-shebangs
-        stages: [pre-commit]
       - id: check-merge-conflict
-        stages: [pre-commit]
       - id: check-shebang-scripts-are-executable
-        stages: [pre-commit]
       - id: check-symlinks
-        stages: [pre-commit]
       - id: check-json
-        stages: [pre-commit]
       - id: check-toml
-        stages: [pre-commit]
       - id: check-vcs-permalinks
-        stages: [pre-commit]
       - id: check-yaml
-        stages: [pre-commit]
       - id: end-of-file-fixer
-        stages: [pre-commit]
       - id: file-contents-sorter
         files: spelling_private_dict\.txt$
-        stages: [pre-commit]
       - id: trailing-whitespace
-        stages: [pre-commit]
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
     hooks:
       - id: rst-directive-colons
-        stages: [pre-commit]
       - id: rst-inline-touching-normal
-        stages: [pre-commit]
       - id: text-unicode-replacement-char
-        stages: [pre-commit]
       - id: rst-backticks
-        stages: [pre-commit]
 
   - repo: local
     hooks:
@@ -98,7 +78,6 @@ repos:
         pass_filenames: false
         types_or: [yaml]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: docformatter
         name: docformatter
@@ -106,7 +85,6 @@ repos:
         language: python
         types_or: [python]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: shellcheck
         name: shellcheck
@@ -114,17 +92,14 @@ repos:
         language: python
         types_or: [shell]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: shellcheck-docs
         name: shellcheck-docs
-        entry:
-          uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=shell
+        entry: uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=shell
           --language=console --command="shellcheck --shell=bash"
         language: python
         types_or: [markdown, rst]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: shfmt
         name: shfmt
@@ -132,64 +107,60 @@ repos:
         language: python
         types_or: [shell]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: shfmt-docs
         name: shfmt-docs
-        entry:
-          uv run --extra=dev doccmd --language=shell --language=console --skip-marker=shfmt
+        entry: uv run --extra=dev doccmd --language=shell --language=console --skip-marker=shfmt
           --no-pad-file --command="shfmt --write --space-redirects --indent=4"
         language: python
         types_or: [markdown, rst]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: mypy
         name: mypy
+        stages: [pre-push]
         entry: uv run --extra=dev -m mypy
         language: python
         types_or: [python, toml]
         pass_filenames: false
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: mypy-docs
         name: mypy-docs
-        entry:
-          uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
+        stages: [pre-push]
+        entry: uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
           --command="mypy"
         language: python
         types_or: [markdown, rst]
-        stages: [pre-commit]
 
       - id: check-manifest
         name: check-manifest
+        stages: [pre-push]
         entry: uv run --extra=dev -m check_manifest
         language: python
         pass_filenames: false
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: pyright
         name: pyright
+        stages: [pre-push]
         entry: uv run --extra=dev -m pyright .
         language: python
         types_or: [python, toml]
         pass_filenames: false
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: pyright-docs
         name: pyright-docs
-        entry:
-          uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
+        stages: [pre-push]
+        entry: uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
           --command="pyright"
         language: python
         types_or: [markdown, rst]
-        stages: [pre-commit]
 
       - id: pyright-verifytypes
         name: pyright-verifytypes
+        stages: [pre-push]
         # Use `--ignoreexternal` because we expose parts of the Sphinx API and Sphinx is not
         # thoroughly typed enough.
         entry: uv run --extra=dev -m pyright --ignoreexternal --verifytypes sphinx_combine
@@ -197,26 +168,24 @@ repos:
         pass_filenames: false
         types_or: [python]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: ty
         name: ty
+        stages: [pre-push]
         entry: uv run --extra=dev ty check
         language: python
         types_or: [python, toml]
         pass_filenames: false
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: ty-docs
         name: ty-docs
-        entry:
-          uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
+        stages: [pre-push]
+        entry: uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
           --command="ty check"
         language: python
         types_or: [markdown, rst]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: vulture
         name: vulture
@@ -225,17 +194,14 @@ repos:
         types_or: [python]
         pass_filenames: false
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: vulture-docs
         name: vulture docs
-        entry:
-          uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
+        entry: uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
           --command="vulture"
         language: python
         types_or: [markdown, rst]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: pyroma
         name: pyroma
@@ -244,7 +210,6 @@ repos:
         pass_filenames: false
         types_or: [toml]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: deptry
         name: deptry
@@ -252,15 +217,14 @@ repos:
         language: python
         pass_filenames: false
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: pylint
         name: pylint
         entry: uv run --extra=dev -m pylint src/ tests/
         language: python
+        stages: [manual]
         pass_filenames: false
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: ruff-check-fix
         name: Ruff check fix
@@ -268,7 +232,6 @@ repos:
         language: python
         types_or: [python]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: ruff-check-fix-docs
         name: Ruff check fix docs
@@ -276,7 +239,6 @@ repos:
         language: python
         types_or: [markdown, rst]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: ruff-format-fix
         name: Ruff format
@@ -284,17 +246,14 @@ repos:
         language: python
         types_or: [python]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: ruff-format-fix-docs
         name: Ruff format docs
-        entry:
-          uv run --extra=dev doccmd --language=python --no-pad-file --command="ruff
+        entry: uv run --extra=dev doccmd --language=python --no-pad-file --command="ruff
           format"
         language: python
         types_or: [markdown, rst]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: doc8
         name: doc8
@@ -302,7 +261,6 @@ repos:
         language: python
         types_or: [rst]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: interrogate
         name: interrogate
@@ -310,17 +268,14 @@ repos:
         language: python
         types_or: [python]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: interrogate-docs
         name: interrogate docs
-        entry:
-          uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
+        entry: uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
           --command="interrogate"
         language: python
         types_or: [markdown, rst]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: pyproject-fmt-fix
         name: pyproject-fmt
@@ -329,7 +284,6 @@ repos:
         types_or: [toml]
         files: pyproject.toml
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: yamlfix
         name: yamlfix
@@ -337,7 +291,6 @@ repos:
         language: python
         types_or: [yaml]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: zizmor
         name: zizmor
@@ -346,7 +299,6 @@ repos:
         pass_filenames: false
         types_or: [yaml]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
 
       - id: sphinx-lint
         name: sphinx-lint
@@ -354,4 +306,3 @@ repos:
         language: python
         types_or: [rst]
         additional_dependencies: [uv==0.9.5]
-        stages: [pre-commit]
