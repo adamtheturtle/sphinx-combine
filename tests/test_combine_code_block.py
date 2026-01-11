@@ -131,6 +131,87 @@ def test_combine_code_blocks_multiple_arguments(
     assert expected_error in str(object=exc.value)
 
 
+def test_emphasize_lines_with_multiline_code_blocks(
+    tmp_path: Path,
+    make_app: Callable[..., SphinxTestApp],
+) -> None:
+    """Test that 'combined-code-block' directive correctly handles :emphasize-
+    lines: when code blocks contain multiple lines.
+
+    This is a regression test for:
+    https://github.com/adamtheturtle/sphinx-combine/issues/280
+
+    The issue is that multi-line code snippets are stored as single
+    StringList elements rather than being split by line. This causes
+    :emphasize-lines: to fail because line numbers don't match.
+    """
+    source_directory = tmp_path / "source"
+    source_directory.mkdir()
+    (source_directory / "conf.py").touch()
+
+    source_file = source_directory / "index.rst"
+    # The combined block has 4 lines total (2 from each code-block).
+    # We emphasize line 4, which should work if lines are split correctly.
+    index_rst_content = dedent(
+        text="""\
+        Testing Emphasize Lines
+        =======================
+
+        .. combined-code-block:: python
+           :emphasize-lines: 4
+
+           .. code-block::
+
+               line1 = "first"
+               line2 = "second"
+
+           .. code-block::
+
+               line3 = "third"
+               line4 = "fourth"
+        """
+    )
+    source_file.write_text(data=index_rst_content)
+
+    app = make_app(
+        srcdir=source_directory,
+        exception_on_warning=True,
+        confoverrides={"extensions": ["sphinx_combine"]},
+    )
+    app.build()
+    assert app.statuscode == 0
+    content_html = (app.outdir / "index.html").read_text()
+    app.cleanup()
+
+    # The equivalent code-block with all lines combined should produce
+    # the same HTML output.
+    equivalent_source = dedent(
+        text="""\
+        Testing Emphasize Lines
+        =======================
+
+        .. code-block:: python
+           :emphasize-lines: 4
+
+            line1 = "first"
+            line2 = "second"
+            line3 = "third"
+            line4 = "fourth"
+        """,
+    )
+
+    source_file.write_text(data=equivalent_source)
+    app_expected = make_app(
+        srcdir=source_directory,
+        exception_on_warning=True,
+    )
+    app_expected.build()
+    assert app_expected.statuscode == 0
+
+    expected_content_html = (app_expected.outdir / "index.html").read_text()
+    assert content_html == expected_content_html
+
+
 def test_setup(
     tmp_path: Path,
     make_app: Callable[..., SphinxTestApp],
