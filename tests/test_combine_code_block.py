@@ -193,10 +193,10 @@ def test_emphasize_lines_with_multiline_code_blocks(
         .. code-block:: python
            :emphasize-lines: 4
 
-            line1 = "first"
-            line2 = "second"
-            line3 = "third"
-            line4 = "fourth"
+           line1 = "first"
+           line2 = "second"
+           line3 = "third"
+           line4 = "fourth"
         """,
     )
 
