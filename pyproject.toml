@@ -50,7 +50,7 @@ optional-dependencies.dev = [
     "mypy[faster-cache]==1.19.1",
     "mypy-strict-kwargs==2026.1.12",
     "myst-parser==5.0.0",
-    "prek==0.2.29",
+    "prek==0.2.30",
     "pyenchant==3.3.0",
     "pylint==4.0.4",
     "pyproject-fmt==2.11.1",
