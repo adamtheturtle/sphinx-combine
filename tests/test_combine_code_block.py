@@ -1,6 +1,4 @@
-"""
-Tests for Sphinx extensions.
-"""
+"""Tests for Sphinx extensions."""
 
 from collections.abc import Callable
 from importlib.metadata import version
@@ -24,7 +22,8 @@ def test_combine_code_blocks(
     language_arguments: tuple[str, ...],
 ) -> None:
     """
-    Test that 'combined-code-block' directive merges multiple code blocks into
+    Test that 'combined-code-block' directive merges multiple code
+    blocks into
     one single code block.
     """
     source_directory = tmp_path / "source"
@@ -90,7 +89,8 @@ def test_combine_code_blocks_multiple_arguments(
     make_app: Callable[..., SphinxTestApp],
 ) -> None:
     """
-    Test that 'combined-code-block' directive raises an error if multiple
+    Test that 'combined-code-block' directive raises an error if
+    multiple
     language arguments are supplied.
     """
     source_directory = tmp_path / "source"
@@ -135,7 +135,8 @@ def test_emphasize_lines_with_multiline_code_blocks(
     tmp_path: Path,
     make_app: Callable[..., SphinxTestApp],
 ) -> None:
-    """Test that 'combined-code-block' directive correctly handles :emphasize-
+    """Test that 'combined-code-block' directive correctly handles
+    :emphasize-
     lines: when code blocks contain multiple lines.
 
     This is a regression test for:
@@ -216,9 +217,7 @@ def test_setup(
     tmp_path: Path,
     make_app: Callable[..., SphinxTestApp],
 ) -> None:
-    """
-    Test that the setup function returns the expected metadata.
-    """
+    """Test that the setup function returns the expected metadata."""
     source_directory = tmp_path / "source"
     source_directory.mkdir()
     (source_directory / "conf.py").touch()

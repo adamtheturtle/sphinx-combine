@@ -1,5 +1,6 @@
 """
-Sphinx extension to combine multiple nested code-blocks into a single one.
+Sphinx extension to combine multiple nested code-blocks into a single
+one.
 """
 
 from importlib.metadata import version
@@ -14,13 +15,15 @@ from sphinx.util.typing import ExtensionMetadata
 
 class CombinedCodeBlock(CodeBlock):
     """
-    A Sphinx directive that merges multiple nested code blocks into a single
+    A Sphinx directive that merges multiple nested code blocks into a
+    single
     literal block.
     """
 
     def run(self) -> list[Node]:
         """
-        Parse the directive content (which may contain multiple code-blocks)
+        Parse the directive content (which may contain multiple code-
+        blocks)
         and return a single merged code-block node.
         """
         container = nodes.container()
@@ -42,9 +45,7 @@ class CombinedCodeBlock(CodeBlock):
 
 
 def setup(app: Sphinx) -> ExtensionMetadata:
-    """
-    Register the 'combined-code-block' directive with Sphinx.
-    """
+    """Register the 'combined-code-block' directive with Sphinx."""
     app.add_directive(name="combined-code-block", cls=CombinedCodeBlock)
     return {
         "parallel_read_safe": True,
