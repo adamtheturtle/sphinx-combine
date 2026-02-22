@@ -17,6 +17,7 @@ import sphinx_combine
     argvalues=[("python",), ()],
 )
 def test_combine_code_blocks(
+    *,
     tmp_path: Path,
     make_app: Callable[..., SphinxTestApp],
     language_arguments: tuple[str, ...],
@@ -85,6 +86,7 @@ def test_combine_code_blocks(
 
 
 def test_combine_code_blocks_multiple_arguments(
+    *,
     tmp_path: Path,
     make_app: Callable[..., SphinxTestApp],
 ) -> None:
@@ -132,6 +134,7 @@ def test_combine_code_blocks_multiple_arguments(
 
 
 def test_emphasize_lines_with_multiline_code_blocks(
+    *,
     tmp_path: Path,
     make_app: Callable[..., SphinxTestApp],
 ) -> None:
@@ -214,6 +217,7 @@ def test_emphasize_lines_with_multiline_code_blocks(
 
 
 def test_setup(
+    *,
     tmp_path: Path,
     make_app: Callable[..., SphinxTestApp],
 ) -> None:
