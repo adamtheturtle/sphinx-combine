@@ -36,7 +36,7 @@ class CombinedCodeBlock(CodeBlock):
         new_content = StringList()
         for literal in container:
             code_snippet = literal.astext()
-            lines = code_snippet.split(sep="\n")
+            lines = code_snippet.rstrip("\n").split("\n")
             new_item_string_list = StringList(initlist=lines)
             new_content.extend(other=new_item_string_list)
 
