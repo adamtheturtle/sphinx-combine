@@ -216,6 +216,80 @@ def test_emphasize_lines_with_multiline_code_blocks(
     assert content_html == expected_content_html
 
 
+def test_no_spurious_blank_lines_between_blocks(
+    *,
+    tmp_path: Path,
+    make_app: Callable[..., SphinxTestApp],
+) -> None:
+    """Test that no spurious blank lines appear between concatenated
+    blocks.
+
+    This is a regression test for:
+    https://github.com/adamtheturtle/sphinx-combine/issues/371
+    """
+    source_directory = tmp_path / "source"
+    source_directory.mkdir()
+    (source_directory / "conf.py").touch()
+
+    data_file = source_directory / "data.json"
+    data_file.write_text(data='["a", "b"]')
+
+    source_file = source_directory / "index.rst"
+    index_rst_content = dedent(
+        text="""\
+        Testing No Spurious Blank Lines
+        ===============================
+
+        .. combined-code-block:: text
+
+           .. code-block:: text
+
+              items = [
+
+           .. literalinclude:: data.json
+
+           .. code-block:: text
+
+              ]
+        """
+    )
+    source_file.write_text(data=index_rst_content)
+
+    app = make_app(
+        srcdir=source_directory,
+        exception_on_warning=True,
+        confoverrides={"extensions": ["sphinx_combine"]},
+    )
+    app.build()
+    assert app.statuscode == 0
+    content_html = (app.outdir / "index.html").read_text()
+    app.cleanup()
+
+    equivalent_source = dedent(
+        text="""\
+        Testing No Spurious Blank Lines
+        ===============================
+
+        .. code-block:: text
+
+            items = [
+            ["a", "b"]
+            ]
+        """,
+    )
+
+    source_file.write_text(data=equivalent_source)
+    app_expected = make_app(
+        srcdir=source_directory,
+        exception_on_warning=True,
+    )
+    app_expected.build()
+    assert app_expected.statuscode == 0
+
+    expected_content_html = (app_expected.outdir / "index.html").read_text()
+    assert content_html == expected_content_html
+
+
 def test_setup(
     *,
     tmp_path: Path,
