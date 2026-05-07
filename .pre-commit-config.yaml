@@ -140,8 +140,9 @@ repos:
       - id: mypy-docs
         name: mypy-docs
         stages: [pre-push]
-        entry: uv run --extra=dev doccmd --no-write-to-file --language=python --command="mypy
-          --num-workers=4"
+        entry: >-
+          uv run --extra=dev doccmd --command="mypy --num-workers=4" --no-write-to-file
+          --language=python
         language: python
         types_or: [markdown, rst]
 
