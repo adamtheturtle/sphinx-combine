@@ -243,6 +243,11 @@ SPELLING.spelling-private-dict-file = "spelling_private_dict.txt"
 # --spelling-private-dict-file option instead of raising a message.
 SPELLING.spelling-store-unknown-words = "no"
 
+[tool.interrogate]
+fail-under = 100
+verbose = 2
+omit-covered-files = true
+
 [tool.check-manifest]
 ignore = [
     "*.enc",
@@ -277,6 +282,55 @@ ignore = [
 optional_dependencies_dev_groups = [
     "dev",
     "release",
+]
+
+[tool.vulture]
+# Duplicate some of .gitignore
+exclude = [ ".venv" ]
+# Ideally we would limit the paths to the source code where we want to ignore names,
+# but Vulture does not enable this.
+ignore_names = [
+    # Sphinx configuration
+    "autoclass_content",
+    "autoclass_content",
+    "autodoc_member_order",
+    "copybutton_exclude",
+    "extensions",
+    "final_argument_whitespace",
+    # pytest fixtures - we name fixtures like this for this purpose
+    "fixture_*",
+    # Sphinx variables
+    "has_content",
+    "html_show_copyright",
+    "html_show_sourcelink",
+    "html_show_sphinx",
+    "html_theme",
+    "html_theme_options",
+    "html_title",
+    "htmlhelp_basename",
+    "intersphinx_mapping",
+    "language",
+    "linkcheck_ignore",
+    "linkcheck_retries",
+    "master_doc",
+    "myst_enable_extensions",
+    "myst_substitutions",
+    "nitpicky",
+    "option_spec",
+    "optional_arguments",
+    "project_copyright",
+    "pygments_style",
+    # pytest configuration
+    "pytest_collect_file",
+    "pytest_plugins",
+    "required_arguments",
+    "rst_prolog",
+    "run",
+    "setup",
+    "source_suffix",
+    "spelling_word_list_filename",
+    "templates_path",
+    "warning_is_error",
 ]
 
 [tool.pyproject-fmt]
@@ -348,11 +402,6 @@ split-summary-body = false
 max-line-length = 75
 linewrap-full-docstring = true
 
-[tool.interrogate]
-fail-under = 100
-verbose = 2
-omit-covered-files = true
-
 [tool.doc8]
 max_line_length = 2000
 ignore_path = [
@@ -363,55 +412,6 @@ ignore_path = [
     "./sample/build",
     "./src/*.egg-info/",
     "./src/*/_setuptools_scm_version.txt",
-]
-
-[tool.vulture]
-# Duplicate some of .gitignore
-exclude = [ ".venv" ]
-# Ideally we would limit the paths to the source code where we want to ignore names,
-# but Vulture does not enable this.
-ignore_names = [
-    # Sphinx configuration
-    "autoclass_content",
-    "autoclass_content",
-    "autodoc_member_order",
-    "copybutton_exclude",
-    "extensions",
-    "final_argument_whitespace",
-    # pytest fixtures - we name fixtures like this for this purpose
-    "fixture_*",
-    # Sphinx variables
-    "has_content",
-    "html_show_copyright",
-    "html_show_sourcelink",
-    "html_show_sphinx",
-    "html_theme",
-    "html_theme_options",
-    "html_title",
-    "htmlhelp_basename",
-    "intersphinx_mapping",
-    "language",
-    "linkcheck_ignore",
-    "linkcheck_retries",
-    "master_doc",
-    "myst_enable_extensions",
-    "myst_substitutions",
-    "nitpicky",
-    "option_spec",
-    "optional_arguments",
-    "project_copyright",
-    "pygments_style",
-    # pytest configuration
-    "pytest_collect_file",
-    "pytest_plugins",
-    "required_arguments",
-    "rst_prolog",
-    "run",
-    "setup",
-    "source_suffix",
-    "spelling_word_list_filename",
-    "templates_path",
-    "warning_is_error",
 ]
 
 [tool.yamlfix]
