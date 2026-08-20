@@ -51,7 +51,7 @@ optional-dependencies.dev = [
     "mypy-strict-kwargs==2026.7.19.1",
     "myst-parser==5.1.0",
     "no-defaults==2.1.0",
-    "prek==0.4.13",
+    "prek==0.4.14",
     "pydocstringformatter==1.0.0",
     "pyenchant==3.3.0",
     "pylint==4.0.7",
