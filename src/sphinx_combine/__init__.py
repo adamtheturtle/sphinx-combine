@@ -13,7 +13,7 @@ from sphinx.directives.code import CodeBlock
 from sphinx.util.typing import ExtensionMetadata
 
 
-def _literal_blocks_from(node: Element) -> list[nodes.literal_block]:
+def _literal_blocks_from(*, node: Element) -> list[nodes.literal_block]:
     """
     Return literal_block nodes to merge from a top-level nested-parse
     child.
@@ -29,7 +29,7 @@ def _literal_blocks_from(node: Element) -> list[nodes.literal_block]:
     return []
 
 
-def _is_blank_separator(node: Node) -> bool:
+def _is_blank_separator(*, node: Node) -> bool:
     """
     Return whether ``node`` is an empty ``|`` line-block used to insert
     a blank line between merged snippets.
@@ -63,9 +63,8 @@ class CombinedCodeBlock(CodeBlock):
                 new_content.extend(other=StringList(initlist=[""]))
                 continue
 
-            if not isinstance(child, Element):
-                continue
-
+            # Nested parse yields element nodes as top-level children.
+            assert isinstance(child, Element)
             for literal in _literal_blocks_from(node=child):
                 code_snippet = literal.astext()
                 stripped = code_snippet.rstrip("\n")

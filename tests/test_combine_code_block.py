@@ -503,6 +503,76 @@ def test_pipe_blank_line_separator_preserved(
     assert content_html == expected_content_html
 
 
+def test_non_empty_line_block_not_merged(
+    *,
+    tmp_path: Path,
+    make_app: Callable[..., SphinxTestApp],
+) -> None:
+    """Test that a non-empty line-block is skipped (unlike empty ``|``).
+
+    This is a regression test for:
+    https://github.com/adamtheturtle/sphinx-combine/issues/633
+    """
+    source_directory = tmp_path / "source"
+    source_directory.mkdir()
+    (source_directory / "conf.py").touch()
+
+    source_file = source_directory / "index.rst"
+    index_rst_content = dedent(
+        text="""\
+        Testing Line Blocks
+        ===================
+
+        .. combined-code-block:: python
+
+           .. code-block:: python
+
+               a = 1
+
+           | keep out
+           | of the code
+
+           .. code-block:: python
+
+               b = 2
+        """
+    )
+    source_file.write_text(data=index_rst_content)
+
+    app = make_app(
+        srcdir=source_directory,
+        exception_on_warning=True,
+        confoverrides={"extensions": ["sphinx_combine"]},
+    )
+    app.build()
+    assert app.statuscode == 0
+    content_html = (app.outdir / "index.html").read_text()
+    app.cleanup()
+
+    equivalent_source = dedent(
+        text="""\
+        Testing Line Blocks
+        ===================
+
+        .. code-block:: python
+
+            a = 1
+            b = 2
+        """,
+    )
+
+    source_file.write_text(data=equivalent_source)
+    app_expected = make_app(
+        srcdir=source_directory,
+        exception_on_warning=True,
+    )
+    app_expected.build()
+    assert app_expected.statuscode == 0
+
+    expected_content_html = (app_expected.outdir / "index.html").read_text()
+    assert content_html == expected_content_html
+
+
 def test_setup(
     *,
     tmp_path: Path,
