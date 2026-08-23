@@ -5,6 +5,11 @@ Changelog
 
 .. towncrier release notes start
 
+2026.08.23.1
+------------
+
+- Warn when ``combined-code-block`` skips nested non-code content instead of silently dropping it.
+
 2026.08.23
 ----------
 

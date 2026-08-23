@@ -1,1 +1,0 @@
-Warn when ``combined-code-block`` skips nested non-code content instead of silently dropping it.
