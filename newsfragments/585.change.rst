@@ -1,1 +1,0 @@
-Only merge nested ``literal_block`` nodes (and empty ``|`` separators), so prose, admonitions, captions, and other non-code content are no longer highlighted as code.

@@ -1,1 +1,0 @@
-Document MyST nesting with a longer outer fence so nested code blocks merge correctly.

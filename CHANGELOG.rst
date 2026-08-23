@@ -5,6 +5,15 @@ Changelog
 
 .. towncrier release notes start
 
+2026.08.23
+----------
+
+- Only merge nested ``literal_block`` nodes (and empty ``|`` separators), so prose, admonitions, captions, and other non-code content are no longer highlighted as code.
+
+- Do not re-apply an outer ``:dedent:`` to already-merged nested code, which previously stripped characters from each line.
+
+- Document MyST nesting with a longer outer fence so nested code blocks merge correctly.
+
 2026.03.13
 ----------
 
