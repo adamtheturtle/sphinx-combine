@@ -57,6 +57,10 @@ Languages and options of code blocks within the directive are ignored.
 By default, there are no blank lines between the code blocks.
 To add a blank line, use ``|``.
 
+Only nested code blocks (and ``literalinclude``) are merged.
+Other nested content is skipped, and Sphinx emits a warning for each
+skipped node. Use ``-W`` to treat those warnings as errors.
+
 MyST Markdown
 -------------
 
