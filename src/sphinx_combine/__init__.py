@@ -10,7 +10,10 @@ from docutils.nodes import Element, Node
 from docutils.statemachine import StringList
 from sphinx.application import Sphinx
 from sphinx.directives.code import CodeBlock
+from sphinx.util import logging
 from sphinx.util.typing import ExtensionMetadata
+
+LOGGER = logging.getLogger(name=__name__)
 
 
 def _literal_blocks_from(*, node: Element) -> list[nodes.literal_block]:
@@ -58,6 +61,7 @@ class CombinedCodeBlock(CodeBlock):
         )
 
         new_content = StringList()
+        location = self.state_machine.get_source_and_line(lineno=self.lineno)
         for child in container:
             if _is_blank_separator(node=child):
                 new_content.extend(other=StringList(initlist=[""]))
@@ -65,7 +69,18 @@ class CombinedCodeBlock(CodeBlock):
 
             # Nested parse yields element nodes as top-level children.
             assert isinstance(child, Element)
-            for literal in _literal_blocks_from(node=child):
+            literals = _literal_blocks_from(node=child)
+            if not literals:
+                LOGGER.warning(
+                    "combined-code-block skipped non-code content of type %s",
+                    child.__class__.__name__,
+                    type="sphinx_combine",
+                    subtype="skipped_non_code",
+                    location=location,
+                )
+                continue
+
+            for literal in literals:
                 code_snippet = literal.astext()
                 stripped = code_snippet.rstrip("\n")
                 lines = stripped.split(sep="\n")
