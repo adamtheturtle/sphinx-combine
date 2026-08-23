@@ -1,0 +1,1 @@
+Do not re-apply an outer ``:dedent:`` to already-merged nested code, which previously stripped characters from each line.
