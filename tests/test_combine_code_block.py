@@ -290,6 +290,219 @@ def test_no_spurious_blank_lines_between_blocks(
     assert content_html == expected_content_html
 
 
+def test_non_code_content_not_merged(
+    *,
+    tmp_path: Path,
+    make_app: Callable[..., SphinxTestApp],
+) -> None:
+    """Test that prose and other non-code nodes are not merged into the
+    output.
+
+    This is a regression test for:
+    https://github.com/adamtheturtle/sphinx-combine/issues/585
+    """
+    source_directory = tmp_path / "source"
+    source_directory.mkdir()
+    (source_directory / "conf.py").touch()
+
+    source_file = source_directory / "index.rst"
+    index_rst_content = dedent(
+        text="""\
+        Testing Non-Code Content
+        ========================
+
+        .. combined-code-block:: python
+
+           .. code-block:: python
+
+               x = 1
+
+           This is regular text between code blocks.
+
+           .. note::
+
+              A note that must not appear in the code.
+
+           .. code-block:: python
+
+               y = 2
+        """
+    )
+    source_file.write_text(data=index_rst_content)
+
+    app = make_app(
+        srcdir=source_directory,
+        exception_on_warning=True,
+        confoverrides={"extensions": ["sphinx_combine"]},
+    )
+    app.build()
+    assert app.statuscode == 0
+    content_html = (app.outdir / "index.html").read_text()
+    app.cleanup()
+
+    equivalent_source = dedent(
+        text="""\
+        Testing Non-Code Content
+        ========================
+
+        .. code-block:: python
+
+            x = 1
+            y = 2
+        """,
+    )
+
+    source_file.write_text(data=equivalent_source)
+    app_expected = make_app(
+        srcdir=source_directory,
+        exception_on_warning=True,
+    )
+    app_expected.build()
+    assert app_expected.statuscode == 0
+
+    expected_content_html = (app_expected.outdir / "index.html").read_text()
+    assert content_html == expected_content_html
+
+
+def test_nested_caption_not_leaked_into_code(
+    *,
+    tmp_path: Path,
+    make_app: Callable[..., SphinxTestApp],
+) -> None:
+    """Test that nested code-block captions are not merged into the code
+    body.
+
+    This is a regression test for:
+    https://github.com/adamtheturtle/sphinx-combine/issues/652
+    """
+    source_directory = tmp_path / "source"
+    source_directory.mkdir()
+    (source_directory / "conf.py").touch()
+
+    data_file = source_directory / "data.txt"
+    data_file.write_text(data="from file\n")
+
+    source_file = source_directory / "index.rst"
+    index_rst_content = dedent(
+        text="""\
+        Testing Nested Captions
+        =======================
+
+        .. combined-code-block:: python
+
+           .. code-block:: python
+              :caption: First caption
+
+              x = 1
+
+           .. literalinclude:: data.txt
+              :caption: Include caption
+        """
+    )
+    source_file.write_text(data=index_rst_content)
+
+    app = make_app(
+        srcdir=source_directory,
+        exception_on_warning=True,
+        confoverrides={"extensions": ["sphinx_combine"]},
+    )
+    app.build()
+    assert app.statuscode == 0
+    content_html = (app.outdir / "index.html").read_text()
+    app.cleanup()
+
+    equivalent_source = dedent(
+        text="""\
+        Testing Nested Captions
+        =======================
+
+        .. code-block:: python
+
+            x = 1
+            from file
+        """,
+    )
+
+    source_file.write_text(data=equivalent_source)
+    app_expected = make_app(
+        srcdir=source_directory,
+        exception_on_warning=True,
+    )
+    app_expected.build()
+    assert app_expected.statuscode == 0
+
+    expected_content_html = (app_expected.outdir / "index.html").read_text()
+    assert content_html == expected_content_html
+
+
+def test_pipe_blank_line_separator_preserved(
+    *,
+    tmp_path: Path,
+    make_app: Callable[..., SphinxTestApp],
+) -> None:
+    """Test that an empty ``|`` line-block still inserts a blank line
+    between merged snippets.
+    """
+    source_directory = tmp_path / "source"
+    source_directory.mkdir()
+    (source_directory / "conf.py").touch()
+
+    source_file = source_directory / "index.rst"
+    index_rst_content = dedent(
+        text="""\
+        Testing Blank Separator
+        =======================
+
+        .. combined-code-block:: python
+
+           .. code-block:: python
+
+               a = 1
+
+           |
+
+           .. code-block:: python
+
+               b = 2
+        """
+    )
+    source_file.write_text(data=index_rst_content)
+
+    app = make_app(
+        srcdir=source_directory,
+        exception_on_warning=True,
+        confoverrides={"extensions": ["sphinx_combine"]},
+    )
+    app.build()
+    assert app.statuscode == 0
+    content_html = (app.outdir / "index.html").read_text()
+    app.cleanup()
+
+    equivalent_source = dedent(
+        text="""\
+        Testing Blank Separator
+        =======================
+
+        .. code-block:: python
+
+            a = 1
+
+            b = 2
+        """,
+    )
+
+    source_file.write_text(data=equivalent_source)
+    app_expected = make_app(
+        srcdir=source_directory,
+        exception_on_warning=True,
+    )
+    app_expected.build()
+    assert app_expected.statuscode == 0
+
+    expected_content_html = (app_expected.outdir / "index.html").read_text()
+    assert content_html == expected_content_html
+
+
 def test_setup(
     *,
     tmp_path: Path,

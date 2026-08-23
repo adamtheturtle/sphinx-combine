@@ -6,11 +6,35 @@ one.
 from importlib.metadata import version
 
 from docutils import nodes
-from docutils.nodes import Node
+from docutils.nodes import Element, Node
 from docutils.statemachine import StringList
 from sphinx.application import Sphinx
 from sphinx.directives.code import CodeBlock
 from sphinx.util.typing import ExtensionMetadata
+
+
+def _literal_blocks_from(node: Element) -> list[nodes.literal_block]:
+    """
+    Return literal_block nodes to merge from a top-level nested-parse
+    child.
+
+    Caption wrappers are ``container`` nodes with ``literal_block=True``
+    that contain a caption plus the real ``literal_block``. Only the
+    inner literal content should be merged.
+    """
+    if isinstance(node, nodes.literal_block):
+        return [node]
+    if isinstance(node, nodes.container) and node.get(key="literal_block"):
+        return list(node.findall(condition=nodes.literal_block))
+    return []
+
+
+def _is_blank_separator(node: Node) -> bool:
+    """
+    Return whether ``node`` is an empty ``|`` line-block used to insert
+    a blank line between merged snippets.
+    """
+    return isinstance(node, nodes.line_block) and not node.astext().strip()
 
 
 class CombinedCodeBlock(CodeBlock):
@@ -34,12 +58,20 @@ class CombinedCodeBlock(CodeBlock):
         )
 
         new_content = StringList()
-        for literal in container:
-            code_snippet = literal.astext()
-            stripped = code_snippet.rstrip("\n")
-            lines = stripped.split(sep="\n")
-            new_item_string_list = StringList(initlist=lines)
-            new_content.extend(other=new_item_string_list)
+        for child in container:
+            if _is_blank_separator(node=child):
+                new_content.extend(other=StringList(initlist=[""]))
+                continue
+
+            if not isinstance(child, Element):
+                continue
+
+            for literal in _literal_blocks_from(node=child):
+                code_snippet = literal.astext()
+                stripped = code_snippet.rstrip("\n")
+                lines = stripped.split(sep="\n")
+                new_item_string_list = StringList(initlist=lines)
+                new_content.extend(other=new_item_string_list)
 
         self.content = new_content
         return super().run()
