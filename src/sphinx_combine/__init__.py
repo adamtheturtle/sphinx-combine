@@ -72,6 +72,10 @@ class CombinedCodeBlock(CodeBlock):
                 new_item_string_list = StringList(initlist=lines)
                 new_content.extend(other=new_item_string_list)
 
+        # Nested blocks are already parsed; applying the outer ``:dedent:``
+        # again would strip characters from the merged code text.
+        self.options.pop("dedent", None)
+
         self.content = new_content
         return super().run()
 

@@ -573,6 +573,82 @@ def test_non_empty_line_block_not_merged(
     assert content_html == expected_content_html
 
 
+def test_outer_dedent_does_not_mangle_merged_code(
+    *,
+    tmp_path: Path,
+    make_app: Callable[..., SphinxTestApp],
+) -> None:
+    """Test that an outer ``:dedent:`` does not strip merged code text.
+
+    Nested snippets are already normalized by nested parsing. Re-applying
+    ``:dedent:`` in ``CodeBlock.run`` previously deleted leading characters
+    from each line (and broke ``:emphasize-lines:`` / ``:caption:``).
+
+    This is a regression test for:
+    https://github.com/adamtheturtle/sphinx-combine/issues/657
+    """
+    source_directory = tmp_path / "source"
+    source_directory.mkdir()
+    (source_directory / "conf.py").touch()
+
+    source_file = source_directory / "index.rst"
+    index_rst_content = dedent(
+        text="""\
+        Testing Outer Dedent
+        ====================
+
+        .. combined-code-block:: python
+           :dedent: 4
+           :emphasize-lines: 2
+           :caption: Combined
+
+           .. code-block:: python
+
+                   x = 1
+
+           .. code-block:: python
+
+                   y = 2
+        """
+    )
+    source_file.write_text(data=index_rst_content)
+
+    app = make_app(
+        srcdir=source_directory,
+        exception_on_warning=True,
+        confoverrides={"extensions": ["sphinx_combine"]},
+    )
+    app.build()
+    assert app.statuscode == 0
+    content_html = (app.outdir / "index.html").read_text()
+    app.cleanup()
+
+    equivalent_source = dedent(
+        text="""\
+        Testing Outer Dedent
+        ====================
+
+        .. code-block:: python
+           :emphasize-lines: 2
+           :caption: Combined
+
+           x = 1
+           y = 2
+        """,
+    )
+
+    source_file.write_text(data=equivalent_source)
+    app_expected = make_app(
+        srcdir=source_directory,
+        exception_on_warning=True,
+    )
+    app_expected.build()
+    assert app_expected.statuscode == 0
+
+    expected_content_html = (app_expected.outdir / "index.html").read_text()
+    assert content_html == expected_content_html
+
+
 def test_setup(
     *,
     tmp_path: Path,
