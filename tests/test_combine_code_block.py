@@ -290,6 +290,84 @@ def test_no_spurious_blank_lines_between_blocks(
     assert content_html == expected_content_html
 
 
+def test_myst_nested_combined_code_block(
+    *,
+    tmp_path: Path,
+    make_app: Callable[..., SphinxTestApp],
+) -> None:
+    """Test MyST nested fences merge when the outer fence is longer.
+
+    This is a regression test for:
+    https://github.com/adamtheturtle/sphinx-combine/issues/660
+    """
+    source_directory = tmp_path / "source"
+    source_directory.mkdir()
+    (source_directory / "conf.py").touch()
+
+    source_file = source_directory / "index.md"
+    index_md_content = dedent(
+        text="""\
+        # Testing MyST Combined Code Blocks
+
+        ````{combined-code-block} python
+        ```{code-block} python
+        x = 1
+        ```
+
+        ```{literalinclude} data.txt
+        ```
+        ````
+        """
+    )
+    source_file.write_text(data=index_md_content)
+    (source_directory / "data.txt").write_text(data="y = 2\n")
+
+    app = make_app(
+        srcdir=source_directory,
+        exception_on_warning=True,
+        confoverrides={
+            "extensions": ["myst_parser", "sphinx_combine"],
+            "source_suffix": {
+                ".md": "markdown",
+                ".rst": "restructuredtext",
+            },
+        },
+    )
+    app.build()
+    assert app.statuscode == 0
+    content_html = (app.outdir / "index.html").read_text()
+    app.cleanup()
+
+    equivalent_source = dedent(
+        text="""\
+        # Testing MyST Combined Code Blocks
+
+        ```{code-block} python
+        x = 1
+        y = 2
+        ```
+        """,
+    )
+
+    source_file.write_text(data=equivalent_source)
+    app_expected = make_app(
+        srcdir=source_directory,
+        exception_on_warning=True,
+        confoverrides={
+            "extensions": ["myst_parser"],
+            "source_suffix": {
+                ".md": "markdown",
+                ".rst": "restructuredtext",
+            },
+        },
+    )
+    app_expected.build()
+    assert app_expected.statuscode == 0
+
+    expected_content_html = (app_expected.outdir / "index.html").read_text()
+    assert content_html == expected_content_html
+
+
 def test_setup(
     *,
     tmp_path: Path,
