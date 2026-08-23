@@ -9,6 +9,7 @@ from textwrap import dedent
 import pytest
 from sphinx.errors import SphinxWarning
 from sphinx.testing.util import SphinxTestApp
+from sphinx.util.console import nocolor
 
 import sphinx_combine
 
@@ -125,13 +126,24 @@ def test_combine_code_blocks_multiple_arguments(
         exception_on_warning=True,
         confoverrides={"extensions": ["sphinx_combine"]},
     )
-    expected_error = (
-        'Error in "combined-code-block" directive:\n'
-        "maximum 1 argument(s) allowed, 2 supplied."
+    expected_error = f"{source_file.resolve()}:4:" + dedent(
+        text="""\
+        Error in "combined-code-block" directive:
+        maximum 1 argument(s) allowed, 2 supplied.
+
+        .. combined-code-block:: python css
+
+            .. code-block::
+
+                print("Hello from snippet one")
+
+            .. code-block::
+
+                print("Hello from snippet two")""",
     )
     with pytest.raises(expected_exception=SphinxWarning) as exc:
         app.build()
-    assert expected_error in str(object=exc.value)
+    assert str(object=exc.value) == expected_error
 
 
 def test_emphasize_lines_with_multiline_code_blocks(
@@ -331,6 +343,7 @@ def test_non_code_content_not_merged(
     )
     source_file.write_text(data=index_rst_content)
 
+    nocolor()
     warning_stream = StringIO()
     app = make_app(
         srcdir=source_directory,
@@ -340,9 +353,14 @@ def test_non_code_content_not_merged(
     app.build()
     assert app.statuscode == 0
     content_html = (app.outdir / "index.html").read_text()
-    warning_text = warning_stream.getvalue()
-    assert "skipped non-code content of type paragraph" in warning_text
-    assert "skipped non-code content of type note" in warning_text
+    warning_path = f"{source_file.resolve()}.rst"
+    expected_warning_text = (
+        f"{warning_path}:4: WARNING: combined-code-block skipped non-code "
+        "content of type paragraph [sphinx_combine.skipped_non_code]\n"
+        f"{warning_path}:4: WARNING: combined-code-block skipped non-code "
+        "content of type note [sphinx_combine.skipped_non_code]\n"
+    )
+    assert warning_stream.getvalue() == expected_warning_text
     app.cleanup()
 
     equivalent_source = dedent(
@@ -411,9 +429,11 @@ def test_skipped_non_code_content_raises_with_warningiserror(
     )
     with pytest.raises(expected_exception=SphinxWarning) as exc:
         app.build()
-    assert "skipped non-code content of type paragraph" in str(
-        object=exc.value,
+    expected_error = (
+        f"({str(object=source_file.resolve())!r}, 4):"
+        "combined-code-block skipped non-code content of type paragraph"
     )
+    assert str(object=exc.value) == expected_error
 
 
 def test_nested_caption_not_leaked_into_code(
@@ -591,6 +611,7 @@ def test_non_empty_line_block_not_merged(
     )
     source_file.write_text(data=index_rst_content)
 
+    nocolor()
     warning_stream = StringIO()
     app = make_app(
         srcdir=source_directory,
@@ -600,8 +621,12 @@ def test_non_empty_line_block_not_merged(
     app.build()
     assert app.statuscode == 0
     content_html = (app.outdir / "index.html").read_text()
-    warning_text = warning_stream.getvalue()
-    assert "skipped non-code content of type line_block" in warning_text
+    warning_path = f"{source_file.resolve()}.rst"
+    expected_warning_text = (
+        f"{warning_path}:4: WARNING: combined-code-block skipped non-code "
+        "content of type line_block [sphinx_combine.skipped_non_code]\n"
+    )
+    assert warning_stream.getvalue() == expected_warning_text
     app.cleanup()
 
     equivalent_source = dedent(
