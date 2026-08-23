@@ -57,6 +57,26 @@ Languages and options of code blocks within the directive are ignored.
 By default, there are no blank lines between the code blocks.
 To add a blank line, use ``|``.
 
+MyST Markdown
+-------------
+
+With `MyST Parser`_, nest directives using a longer outer fence so inner
+fenced blocks are not truncated:
+
+.. code-block:: markdown
+
+   ````{combined-code-block} python
+   ```{code-block} python
+   x = 1
+   ```
+
+   ```{code-block} python
+   y = 2
+   ```
+   ````
+
+.. _MyST Parser: https://myst-parser.readthedocs.io/
+
 Contributing
 ------------
 
