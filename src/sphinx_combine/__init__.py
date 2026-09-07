@@ -12,6 +12,7 @@ from sphinx.application import Sphinx
 from sphinx.directives.code import CodeBlock
 from sphinx.util import logging
 from sphinx.util.typing import ExtensionMetadata
+from typing_extensions import override
 
 LOGGER = logging.getLogger(name=__name__)
 
@@ -47,6 +48,7 @@ class CombinedCodeBlock(CodeBlock):
     literal block.
     """
 
+    @override
     def run(self) -> list[Node]:
         """
         Parse the directive content (which may contain multiple code-
