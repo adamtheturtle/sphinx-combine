@@ -32,8 +32,7 @@ Add the following to ``conf.py`` to enable the extension:
 Using ``combined-code-block``
 -----------------------------
 
-The extension provides a new directive, ``combined-code-block``, which allows
-you to combine multiple code blocks into a single code block.
+The extension provides a new directive, ``combined-code-block``, which allows you to combine multiple code blocks into a single code block.
 
 The directive takes a language argument which is used to determine the syntax, as well as all options that the `code-block directive <https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-code-block>`_ supports.
 
@@ -58,14 +57,13 @@ By default, there are no blank lines between the code blocks.
 To add a blank line, use ``|``.
 
 Only nested code blocks (and ``literalinclude``) are merged.
-Other nested content is skipped, and Sphinx emits a warning for each
-skipped node. Use ``-W`` to treat those warnings as errors.
+Other nested content is skipped, and Sphinx emits a warning for each skipped node.
+Use ``-W`` to treat those warnings as errors.
 
 MyST Markdown
 -------------
 
-With `MyST Parser`_, nest directives using a longer outer fence so inner
-fenced blocks are not truncated:
+With `MyST Parser`_, nest directives using a longer outer fence so inner fenced blocks are not truncated:
 
 .. code-block:: markdown
 
