@@ -28,7 +28,9 @@ def _literal_blocks_from(*, node: Element) -> list[nodes.literal_block]:
     """
     if isinstance(node, nodes.literal_block):
         return [node]
-    if isinstance(node, nodes.container) and node.get(key="literal_block"):
+    if isinstance(node, nodes.container) and bool(
+        node.get(key="literal_block")
+    ):
         return list(node.findall(condition=nodes.literal_block))
     return []
 
@@ -38,7 +40,7 @@ def _is_blank_separator(*, node: Node) -> bool:
     Return whether ``node`` is an empty ``|`` line-block used to insert
     a blank line between merged snippets.
     """
-    return isinstance(node, nodes.line_block) and not node.astext().strip()
+    return isinstance(node, nodes.line_block) and node.astext().strip() == ""
 
 
 class CombinedCodeBlock(CodeBlock):
@@ -56,7 +58,7 @@ class CombinedCodeBlock(CodeBlock):
         and return a single merged code-block node.
         """
         container = nodes.container()
-        self.state.nested_parse(
+        _ = self.state.nested_parse(
             block=self.content,
             input_offset=self.content_offset,
             node=container,
@@ -72,7 +74,7 @@ class CombinedCodeBlock(CodeBlock):
             # Nested parse yields element nodes as top-level children.
             assert isinstance(child, Element)
             literals = _literal_blocks_from(node=child)
-            if not literals:
+            if len(literals) == 0:
                 LOGGER.warning(
                     "combined-code-block skipped non-code content of type %s",
                     child.__class__.__name__,
