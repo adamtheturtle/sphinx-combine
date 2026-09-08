@@ -51,7 +51,7 @@ def test_combine_code_blocks(
                print("Hello from snippet two")
         """
     )
-    source_file.write_text(data=index_rst_content)
+    _ = source_file.write_text(data=index_rst_content)
 
     app = make_app(
         srcdir=source_directory,
@@ -75,7 +75,7 @@ def test_combine_code_blocks(
         """,
     )
 
-    source_file.write_text(data=equivalent_source)
+    _ = source_file.write_text(data=equivalent_source)
     app_expected = make_app(
         srcdir=source_directory,
         exception_on_warning=True,
@@ -119,7 +119,7 @@ def test_combine_code_blocks_multiple_arguments(
                 print("Hello from snippet two")
         """
     )
-    source_file.write_text(data=index_rst_content)
+    _ = source_file.write_text(data=index_rst_content)
 
     app = make_app(
         srcdir=source_directory,
@@ -188,7 +188,7 @@ def test_emphasize_lines_with_multiline_code_blocks(
                line4 = "fourth"
         """
     )
-    source_file.write_text(data=index_rst_content)
+    _ = source_file.write_text(data=index_rst_content)
 
     app = make_app(
         srcdir=source_directory,
@@ -217,7 +217,7 @@ def test_emphasize_lines_with_multiline_code_blocks(
         """,
     )
 
-    source_file.write_text(data=equivalent_source)
+    _ = source_file.write_text(data=equivalent_source)
     app_expected = make_app(
         srcdir=source_directory,
         exception_on_warning=True,
@@ -245,7 +245,7 @@ def test_no_spurious_blank_lines_between_blocks(
     (source_directory / "conf.py").touch()
 
     data_file = source_directory / "data.json"
-    data_file.write_text(data='["a", "b"]')
+    _ = data_file.write_text(data='["a", "b"]')
 
     source_file = source_directory / "index.rst"
     index_rst_content = dedent(
@@ -266,7 +266,7 @@ def test_no_spurious_blank_lines_between_blocks(
               ]
         """
     )
-    source_file.write_text(data=index_rst_content)
+    _ = source_file.write_text(data=index_rst_content)
 
     app = make_app(
         srcdir=source_directory,
@@ -291,7 +291,7 @@ def test_no_spurious_blank_lines_between_blocks(
         """,
     )
 
-    source_file.write_text(data=equivalent_source)
+    _ = source_file.write_text(data=equivalent_source)
     app_expected = make_app(
         srcdir=source_directory,
         exception_on_warning=True,
@@ -341,7 +341,7 @@ def test_non_code_content_not_merged(
                y = 2
         """
     )
-    source_file.write_text(data=index_rst_content)
+    _ = source_file.write_text(data=index_rst_content)
 
     nocolor()
     warning_stream = StringIO()
@@ -375,7 +375,7 @@ def test_non_code_content_not_merged(
         """,
     )
 
-    source_file.write_text(data=equivalent_source)
+    _ = source_file.write_text(data=equivalent_source)
     app_expected = make_app(
         srcdir=source_directory,
         exception_on_warning=True,
@@ -420,7 +420,7 @@ def test_skipped_non_code_content_raises_with_warningiserror(
                y = 2
         """
     )
-    source_file.write_text(data=index_rst_content)
+    _ = source_file.write_text(data=index_rst_content)
 
     app = make_app(
         srcdir=source_directory,
@@ -452,7 +452,7 @@ def test_nested_caption_not_leaked_into_code(
     (source_directory / "conf.py").touch()
 
     data_file = source_directory / "data.txt"
-    data_file.write_text(data="from file\n")
+    _ = data_file.write_text(data="from file\n")
 
     source_file = source_directory / "index.rst"
     index_rst_content = dedent(
@@ -471,7 +471,7 @@ def test_nested_caption_not_leaked_into_code(
               :caption: Include caption
         """
     )
-    source_file.write_text(data=index_rst_content)
+    _ = source_file.write_text(data=index_rst_content)
 
     app = make_app(
         srcdir=source_directory,
@@ -495,7 +495,7 @@ def test_nested_caption_not_leaked_into_code(
         """,
     )
 
-    source_file.write_text(data=equivalent_source)
+    _ = source_file.write_text(data=equivalent_source)
     app_expected = make_app(
         srcdir=source_directory,
         exception_on_warning=True,
@@ -538,7 +538,7 @@ def test_pipe_blank_line_separator_preserved(
                b = 2
         """
     )
-    source_file.write_text(data=index_rst_content)
+    _ = source_file.write_text(data=index_rst_content)
 
     app = make_app(
         srcdir=source_directory,
@@ -563,7 +563,7 @@ def test_pipe_blank_line_separator_preserved(
         """,
     )
 
-    source_file.write_text(data=equivalent_source)
+    _ = source_file.write_text(data=equivalent_source)
     app_expected = make_app(
         srcdir=source_directory,
         exception_on_warning=True,
@@ -609,7 +609,7 @@ def test_non_empty_line_block_not_merged(
                b = 2
         """
     )
-    source_file.write_text(data=index_rst_content)
+    _ = source_file.write_text(data=index_rst_content)
 
     nocolor()
     warning_stream = StringIO()
@@ -641,7 +641,7 @@ def test_non_empty_line_block_not_merged(
         """,
     )
 
-    source_file.write_text(data=equivalent_source)
+    _ = source_file.write_text(data=equivalent_source)
     app_expected = make_app(
         srcdir=source_directory,
         exception_on_warning=True,
@@ -691,7 +691,7 @@ def test_outer_dedent_does_not_mangle_merged_code(
                    y = 2
         """
     )
-    source_file.write_text(data=index_rst_content)
+    _ = source_file.write_text(data=index_rst_content)
 
     app = make_app(
         srcdir=source_directory,
@@ -717,7 +717,7 @@ def test_outer_dedent_does_not_mangle_merged_code(
         """,
     )
 
-    source_file.write_text(data=equivalent_source)
+    _ = source_file.write_text(data=equivalent_source)
     app_expected = make_app(
         srcdir=source_directory,
         exception_on_warning=True,
@@ -758,8 +758,8 @@ def test_myst_nested_combined_code_block(
         ````
         """
     )
-    source_file.write_text(data=index_md_content)
-    (source_directory / "data.txt").write_text(data="y = 2\n")
+    _ = source_file.write_text(data=index_md_content)
+    _ = (source_directory / "data.txt").write_text(data="y = 2\n")
 
     app = make_app(
         srcdir=source_directory,
@@ -788,7 +788,7 @@ def test_myst_nested_combined_code_block(
         """,
     )
 
-    source_file.write_text(data=equivalent_source)
+    _ = source_file.write_text(data=equivalent_source)
     app_expected = make_app(
         srcdir=source_directory,
         exception_on_warning=True,
