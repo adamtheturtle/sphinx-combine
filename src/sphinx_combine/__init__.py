@@ -26,13 +26,13 @@ def _literal_blocks_from(*, node: Element) -> list[nodes.literal_block]:
     that contain a caption plus the real ``literal_block``. Only the
     inner literal content should be merged.
     """
-    if isinstance(node, nodes.literal_block):
-        return [node]
-    if isinstance(node, nodes.container) and bool(
-        node.get(key="literal_block")
-    ):
-        return list(node.findall(condition=nodes.literal_block))
-    return []
+    match node:
+        case nodes.literal_block():
+            return [node]
+        case nodes.container() if bool(node.get(key="literal_block")):
+            return list(node.findall(condition=nodes.literal_block))
+        case _:
+            return []
 
 
 def _is_blank_separator(*, node: Node) -> bool:
