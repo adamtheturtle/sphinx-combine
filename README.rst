@@ -60,6 +60,42 @@ Only nested code blocks (and ``literalinclude``) are merged.
 Other nested content is skipped, and Sphinx emits a warning for each skipped node.
 Use ``-W`` to treat those warnings as errors.
 
+Formatting combined code
+------------------------
+
+Set ``sphinx_combine_formatters`` in ``conf.py`` to format the complete code after joining its fragments.
+The keys are outer directive languages.
+Each value is a list containing an executable and its arguments.
+For example, install ``clang-format`` in the documentation environment and configure Objective-C:
+
+.. code-block:: python
+
+   """Configure formatting after combining code fragments."""
+
+   sphinx_combine_formatters = {
+       "objective-c": ["clang-format", "--assume-filename=example.m"],
+   }
+
+The command reads UTF-8 code on standard input and writes the formatted code to standard output.
+It runs in the documentation source directory, without a shell.
+Arguments are passed literally.
+Shell expressions are not expanded.
+Formatters are not installed by this extension.
+
+Unconfigured languages keep their original content.
+A missing command, nonzero exit, invalid UTF-8, or a command taking longer than 30 seconds produces a source-located directive error.
+A command that discards nonempty code also produces an error.
+Use ``-W`` to fail the build on directive errors.
+Changing this configuration rebuilds the Sphinx environment.
+If a formatter reads style files, list them in ``sphinx_combine_formatter_dependencies`` so changes rebuild the affected documents.
+Paths may be absolute or relative to the documentation source directory.
+
+.. code-block:: python
+
+   """Track formatter configuration alongside the code it formats."""
+
+   sphinx_combine_formatter_dependencies = ["../.clang-format"]
+
 MyST Markdown
 -------------
 

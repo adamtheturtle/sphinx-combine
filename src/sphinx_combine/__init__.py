@@ -3,7 +3,9 @@ Sphinx extension to combine multiple nested code-blocks into a single
 one.
 """
 
+import subprocess
 from importlib.metadata import version
+from typing import TypeGuard
 
 from docutils import nodes
 from docutils.nodes import Element, Node
@@ -41,6 +43,20 @@ def _is_blank_separator(*, node: Node) -> bool:
     a blank line between merged snippets.
     """
     return isinstance(node, nodes.line_block) and node.astext().strip() == ""
+
+
+def _is_argument_list(value: object, /) -> TypeGuard[list[object]]:
+    """Narrow external Sphinx configuration without asserting its
+    shape.
+    """
+    return isinstance(value, list)
+
+
+def _is_string_list(value: object, /) -> TypeGuard[list[str]]:
+    """Validate configuration before passing arguments to a process."""
+    return _is_argument_list(value) and all(
+        isinstance(argument, str) for argument in value
+    )
 
 
 class CombinedCodeBlock(CodeBlock):
@@ -95,13 +111,81 @@ class CombinedCodeBlock(CodeBlock):
         # again would strip characters from the merged code text.
         self.options.pop("dedent", None)
 
-        self.content = new_content
+        self.content: StringList = self._format_content(content=new_content)
         return super().run()
+
+    def _format_content(self, *, content: StringList) -> StringList:
+        """Format the complete program only for configured languages."""
+        language = self.arguments[0] if len(self.arguments) > 0 else "none"
+        formatters = self.config.sphinx_combine_formatters
+        if language not in formatters:
+            return content
+        dependencies = self.config.sphinx_combine_formatter_dependencies
+        if not _is_string_list(dependencies):
+            msg = (
+                "sphinx_combine_formatter_dependencies must be "
+                "a list of paths."
+            )
+            raise self.error(message=msg)
+        for dependency in dependencies:
+            self.env.note_dependency(filename=dependency)
+        command = formatters[language]
+        if not _is_string_list(command) or len(command) == 0:
+            msg = (
+                f"sphinx_combine_formatters[{language!r}] must be a "
+                "nonempty list of command arguments."
+            )
+            raise self.error(message=msg)
+        code = "\n".join(content) + "\n"
+        try:
+            result = subprocess.run(  # noqa: S603 - trusted configuration arguments
+                args=command,
+                input=code,
+                capture_output=True,
+                encoding="utf-8",
+                check=True,
+                cwd=self.env.srcdir,
+                timeout=30,
+            )
+        except (
+            OSError,
+            subprocess.SubprocessError,
+            ValueError,
+        ) as error:
+            detail = (
+                f"exit status {error.returncode}: {error.stderr}"
+                if isinstance(error, subprocess.CalledProcessError)
+                else str(object=error)
+            )
+            msg = (
+                f"combined-code-block formatter for {language!r} "
+                f"failed: {detail}"
+            )
+            raise self.error(message=msg) from error
+        if code.strip() != "" and result.stdout.strip() == "":
+            msg = (
+                f"combined-code-block formatter for {language!r} "
+                "discarded the code."
+            )
+            raise self.error(message=msg)
+        return StringList(initlist=result.stdout.splitlines())
 
 
 def setup(app: Sphinx) -> ExtensionMetadata:
     """Register the 'combined-code-block' directive with Sphinx."""
     app.add_directive(name="combined-code-block", cls=CombinedCodeBlock)
+    app.add_config_value(
+        name="sphinx_combine_formatters",
+        default={},
+        rebuild="env",
+        types={dict},
+    )
+    app.add_config_value(
+        name="sphinx_combine_formatter_dependencies",
+        default=[],
+        rebuild="env",
+        types={list},
+    )
     return {
         "parallel_read_safe": True,
         "parallel_write_safe": True,
