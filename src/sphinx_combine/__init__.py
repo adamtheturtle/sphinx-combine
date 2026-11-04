@@ -140,20 +140,21 @@ class CombinedCodeBlock(CodeBlock):
         try:
             result = subprocess.run(  # noqa: S603 - trusted configuration arguments
                 args=command,
-                input=code,
+                input=code.encode(encoding="utf-8"),
                 capture_output=True,
-                encoding="utf-8",
                 check=True,
                 cwd=self.env.srcdir,
                 timeout=30,
             )
+            formatted = result.stdout.decode(encoding="utf-8")
         except (
             OSError,
             subprocess.SubprocessError,
             ValueError,
         ) as error:
             detail = (
-                f"exit status {error.returncode}: {error.stderr}"
+                f"exit status {error.returncode}: "
+                + error.stderr.decode(encoding="utf-8", errors="replace")
                 if isinstance(error, subprocess.CalledProcessError)
                 else str(object=error)
             )
@@ -162,13 +163,13 @@ class CombinedCodeBlock(CodeBlock):
                 f"failed: {detail}"
             )
             raise self.error(message=msg) from error
-        if code.strip() != "" and result.stdout.strip() == "":
+        if code.strip() != "" and formatted.strip() == "":
             msg = (
                 f"combined-code-block formatter for {language!r} "
                 "discarded the code."
             )
             raise self.error(message=msg)
-        return StringList(initlist=result.stdout.splitlines())
+        return StringList(initlist=formatted.splitlines())
 
 
 def setup(app: Sphinx) -> ExtensionMetadata:

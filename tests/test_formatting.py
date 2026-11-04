@@ -68,6 +68,8 @@ print('formatted café')
             "sphinx_combine_formatters": {
                 "objective-c": [
                     sys.executable,
+                    "-X",
+                    "utf8",
                     str(object=script),
                     "literal $(argument);",
                 ],
