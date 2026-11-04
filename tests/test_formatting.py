@@ -232,7 +232,8 @@ def test_formatter_dependency_rebuilds_document(
         )
         assert blocks[0].astext() == output
         assert style.resolve() in {
-            Path(item).resolve() for item in app.env.dependencies["index"]
+            (Path(app.srcdir) / item).resolve()
+            for item in app.env.dependencies["index"]
         }
         app.cleanup()
 
