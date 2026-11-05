@@ -2,8 +2,6 @@ admin
 beartype
 changelog
 conf
-formatter
-formatters
 hardcoded
 inline
 linters

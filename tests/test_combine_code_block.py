@@ -819,7 +819,7 @@ def test_setup(
 
     app = make_app(
         srcdir=source_directory,
-        confoverrides={},
+        confoverrides={"extensions": ["sphinx_combine"]},
     )
     setup_result = sphinx_combine.setup(app=app)
     pkg_version = version(distribution_name="sphinx-combine")

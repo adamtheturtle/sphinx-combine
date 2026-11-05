@@ -338,8 +338,6 @@ ignore_names = [
     "setup",
     "source_suffix",
     "spelling_word_list_filename",
-    "sphinx_combine_formatter_dependencies",
-    "sphinx_combine_formatters",
     "templates_path",
     "warning_is_error",
 ]
