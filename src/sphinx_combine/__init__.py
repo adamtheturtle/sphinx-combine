@@ -14,7 +14,7 @@ from sphinx.util import logging
 from sphinx.util.typing import ExtensionMetadata
 from typing_extensions import override
 
-LOGGER = logging.getLogger(name=__name__)
+LOGGER: logging.SphinxLoggerAdapter = logging.getLogger(name=__name__)
 
 
 def _literal_blocks_from(*, node: Element) -> list[nodes.literal_block]:
