@@ -32,7 +32,7 @@ Add the following to ``conf.py`` to enable the extension:
 Using ``combined-code-block``
 -----------------------------
 
-The extension provides a new directive, ``combined-code-block``, which allows you to combine multiple code blocks into a single code block.
+The extension provides a new directive, ``combined-code-block``, which combines multiple code blocks into one block.
 
 The directive takes a language argument which is used to determine the syntax, as well as all options that the `code-block directive <https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-code-block>`_ supports.
 
